@@ -182,6 +182,14 @@
     {{- end }}
 {{- end }}
 
+{{- /* Route */}}
+{{- define "jupyterhub.route.fullname" -}}
+    {{- if (include "jupyterhub.fullname" .) }}
+        {{- include "jupyterhub.fullname" . }}
+    {{- else -}}
+        jupyterhub
+    {{- end }}
+{{- end }}
 
 
 {{- /*
@@ -250,6 +258,7 @@ continuous-image-puller: {{ include "jupyterhub.continuous-image-puller.fullname
 singleuser: {{ include "jupyterhub.singleuser.fullname" . | quote }}
 image-pull-secret: {{ include "jupyterhub.image-pull-secret.fullname" . | quote }}
 ingress: {{ include "jupyterhub.ingress.fullname" . | quote }}
+route: {{ include "jupyterhub.route.fullname" . | quote }}
 priority: {{ include "jupyterhub.priority.fullname" . | quote }}
 user-placeholder-priority: {{ include "jupyterhub.user-placeholder-priority.fullname" . | quote }}
 user-scheduler: {{ include "jupyterhub.user-scheduler.fullname" . | quote }}

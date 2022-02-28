@@ -20,6 +20,7 @@ required:
   - proxy
   - singleuser
   - ingress
+  - route
   - prePuller
   - custom
   - cull
@@ -2462,6 +2463,39 @@ properties:
           See [the Kubernetes
           documentation](https://kubernetes.io/docs/concepts/services-networking/ingress/#tls)
           for more details about annotations.
+
+  route:
+    type: object
+    additionalProperties: false
+    required: [enabled]
+    properties:
+      enabled:
+        type: boolean
+        description: |
+          Enable the creation of an OpenShift route to proxy-public service.
+
+      annotations:
+        type: object
+        additionalProperties: false
+        patternProperties: *labels-and-annotations-patternProperties
+        description: |
+          Annotations to apply to the Route resource.
+
+      host:
+        type: [string, "null"]
+        description: |
+          host is an alias/DNS that points to the service.
+
+      tls:
+        type: object
+        additionalProperties: false
+        description: |
+          Configuration for route TLS.
+        properties:
+          enabled:
+            type: [boolean, "null"]
+            description: |
+              Whether TLS should be enabled. Defaults to `true`.
 
   prePuller:
     type: object
