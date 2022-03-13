@@ -39,7 +39,9 @@ spec:
 
     # allowed pods (hub.jupyter.org/network-access-singleuser) --> singleuser-server
     - ports:
-        - port: notebook-port
+        # The official chart uses a named port "notebook-port", for some reason that doesn't work, might be something to do with openshift-sdn
+        # might be something to do with the fact that other named ports are accessed through a service (although, from what I know about the way it is implemented there's no reason for it)
+        - port: 8888
       from:
         # source 1 - labeled pods
         - podSelector:
