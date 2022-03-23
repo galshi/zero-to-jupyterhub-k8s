@@ -85,6 +85,16 @@ singleuser:
   extraEnv:
 #    defaultUrl: /tree/
 #    JUPYTERHUB_SINGLEUSER_APP: "jupyter_server.serverapp.ServerApp"
+    POD_IP:
+      name: POD_IP
+      valueFrom:
+        fieldRef:
+          fieldPath: status.podIP
+    NAMESPACE:
+      name: NAMESPACE
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.namespace
   extraPodConfig: {"automount_service_account_token": true}
   profileList:
   # Images available at https://github.com/momoadc/jupyter-notebooks/pkgs/container/jupyter-notebooks%2Fpyspark-notebook
