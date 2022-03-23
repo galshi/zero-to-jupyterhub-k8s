@@ -9,7 +9,7 @@ metadata:
     {{- . | toYaml | nindent 4 }}
     {{- end }}
     {{- if ((.Values).route).enabled }}
-    serviceaccounts.openshift.io/oauth-redirectreference.first: {{  printf "{\"kind\":\"OAuthRedirectReference\",\"apiVersion\":\"v1\",\"reference\":{\"kind\":\"Route\",\"name\":\"%s\"}}" (include "jupyterhub.hub.fullname" .) | quote }}
+    serviceaccounts.openshift.io/oauth-redirectreference.first: {{  printf "{\"kind\":\"OAuthRedirectReference\",\"apiVersion\":\"v1\",\"reference\":{\"kind\":\"Route\",\"name\":\"%s\"}}" (include "jupyterhub.route.fullname" .) | quote }}
     serviceaccounts.openshift.io/oauth-redirecturi.first: hub/oauth_callback
     serviceaccounts.openshift.io/oauth-want-challenges: 'false'
     {{- end }}

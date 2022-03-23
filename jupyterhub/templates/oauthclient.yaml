@@ -1,0 +1,12 @@
+{{- if eq .Values.hub.config.JupyterHub.authenticator_class "openshift" -}}
+apiVersion: oauth.openshift.io/v1
+grantMethod: auto
+kind: OAuthClient
+metadata:
+  labels:
+    {{- include "jupyterhub.labels" . | nindent 4 }}
+  name: {{ printf "%s-%s-users" (include "jupyterhub.appLabel" .) .Release.Namespace }}
+redirectURIs:
+- {{ .Values.hub.config.OpenShiftOAuthenticator.oauth_callback_url }}
+secret: {{ .Values.hub.config.OpenShiftOAuthenticator.client_secret }}
+{{- end -}}
