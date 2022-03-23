@@ -80,6 +80,10 @@ singleuser:
   startTimeout: 120
   cloudMetadata:
     blockWithIptables: False
+  storage:
+    dynamic:
+      storageClass: managed-premium
+    capacity: 1Gi
   uid:
   fsgid:
   extraEnv:
