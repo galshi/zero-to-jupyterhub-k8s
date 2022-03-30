@@ -45,21 +45,21 @@ route:
 
 hub:
   networkPolicy:
-    enabled: false
+    enabled: true
   config:
     Authenticator:
       enable_auth_state: true
       auto_login: true
     OpenShiftOAuthenticator:
       # APPLICATION_NAME-NAMESPACE-users
-      client_id: jupyterhub-test-jupyterhub-helm-users
-      client_secret: oODCi8pvtXG7IuYFVeV1c1VX24mTWTpd
+      client_id: jupyterhub-jupyterhub-users
+      client_secret: oODCi8pvtXg7IuYFVeV1c1VX24mTWTpd
       # https://APPLICATION_NAME-NAMESPACE.CLUSTER_SUBDOMAIN/hub/oauth_callback
-      oauth_callback_url: https://jupyterhub-test-jupyterhub-helm.apps.lcc570vo.eastus.aroapp.io/hub/oauth_callback
-      scope:
-        - user:full
+      oauth_callback_url: https://jupyterhub-jupyterhub.apps.lcc570vo.eastus.aroapp.io/hub/oauth_callback
+      
     JupyterHub:
       authenticator_class: openshift
+      scope: ["user:full"]
   image:
     tag: "1.2.0"
   extraConfig:
@@ -69,8 +69,9 @@ hub:
             # auth_state not enabled
             raise ValueError("Auth state is not enabled")
         spawner.environment['OPENSHIFT_TOKEN'] = auth_state['access_token']
-
       c.Spawner.auth_state_hook = auth_state_hook
+      from oauthenticator.openshift import OpenShiftOAuthenticator
+      OpenShiftOAuthenticator.scope = ['user:full']
 
 singleuser:
   # Set to legacy implementation of jupyter notebook, need to check extensions before upgrading to jupyterhub 2.0.0 and jupyterlab
