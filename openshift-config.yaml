@@ -59,7 +59,6 @@ hub:
       
     JupyterHub:
       authenticator_class: openshift
-      scope: ["user:full"]
   image:
     tag: "1.2.0"
   extraConfig:
