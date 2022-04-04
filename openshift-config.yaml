@@ -70,6 +70,7 @@ hub:
             raise ValueError("Auth state is not enabled")
         spawner.environment['OPENSHIFT_TOKEN'] = auth_state['access_token']
       c.Spawner.auth_state_hook = auth_state_hook
+    set_oauth_scope.py: |
       from oauthenticator.openshift import OpenShiftOAuthenticator
       OpenShiftOAuthenticator.scope = ['user:full']
 
