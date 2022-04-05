@@ -39,7 +39,7 @@ spec:
 
     # allowed pods (hub.jupyter.org/network-access-proxy-api) --> proxy (api port)
     - ports:
-        - port: api
+        - port: 8001
       from:
         # source 1 - labeled pods
         - podSelector:
