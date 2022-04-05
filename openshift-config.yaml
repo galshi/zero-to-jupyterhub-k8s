@@ -39,7 +39,7 @@ proxy:
       name: expruc/jupyterhub-proxy-openshift
       tag: 'latest'
     networkPolicy:
-      enabled: true
+      enabled: false
       interNamespaceAccessLabels: "accept"
   service:
     type: ClusterIP
@@ -51,7 +51,7 @@ route:
 
 hub:
   networkPolicy:
-    enabled: true
+    enabled: false
   fsGid:
   containerSecurityContext:
     runAsUser:
@@ -70,9 +70,9 @@ hub:
         - user:full
     JupyterHub:
       authenticator_class: openshift
-  # image:
-  #   name: docker.io/expruc/openshift-hub
-  #   tag: "latest"
+  image:
+    name: docker.io/expruc/openshift-hub
+    tag: "latest"
   extraConfig:
     mount_oauth_token.py: |
       async def auth_state_hook(spawner, auth_state):
