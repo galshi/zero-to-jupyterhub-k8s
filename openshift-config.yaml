@@ -39,8 +39,9 @@ proxy:
       name: expruc/jupyterhub-proxy-openshift
       tag: 'latest'
     networkPolicy:
-      enabled: false
+      enabled: true
       interNamespaceAccessLabels: "accept"
+      allowedIngressPorts: [8000, 8443]
   service:
     type: ClusterIP
 
@@ -51,7 +52,7 @@ route:
 
 hub:
   networkPolicy:
-    enabled: false
+    enabled: true
   fsGid:
   containerSecurityContext:
     runAsUser:
