@@ -60,7 +60,7 @@ RUN if test -n "$PIP_OVERRIDES"; then \
 WORKDIR /srv/jupyterhub
 
 # So we can actually write a db file here
-RUN chown ${NB_USER}:${NB_USER} /srv/jupyterhub
+RUN chown ${NB_USER}:0 /srv/jupyterhub && chgrp -R 0 /usr/local/
 
 # JupyterHub API port
 EXPOSE 8081
