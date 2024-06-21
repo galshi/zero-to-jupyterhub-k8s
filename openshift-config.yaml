@@ -1,0 +1,124 @@
+# This file can update the JupyterHub Helm chart's default configuration values.
+#
+# For reference see the configuration reference and default values, but make
+# sure to refer to the Helm chart version of interest to you!
+#
+# Introduction to YAML:     https://www.youtube.com/watch?v=cdLNKUoMc6c
+# Chart config reference:   https://zero-to-jupyterhub.readthedocs.io/en/stable/resources/reference.html
+# Chart default values:     https://github.com/jupyterhub/zero-to-jupyterhub-k8s/blob/HEAD/jupyterhub/values.yaml
+# Available chart versions: https://jupyterhub.github.io/helm-chart/
+#
+
+#helm upgrade --cleanup-on-fail \
+#  --install test-jupyterhub-helm jupyterhub/jupyterhub \
+#  --namespace test-jupyterhub-helm \
+#  --version=1.2.0 \
+#  --values config.yaml
+
+rbac:
+  enabled: true
+
+prePuller:
+  hook:
+    enabled: false
+  continuous:
+    enabled: false
+
+scheduling:
+  userPlaceholder:
+    enabled: false
+  userScheduler:
+    enabled: false
+
+proxy:
+  chp:
+    containerSecurityContext:
+      runAsUser:
+      runAsGroup:
+    image: 
+      name: expruc/jupyterhub-proxy-openshift
+      tag: 'latest'
+    networkPolicy:
+      enabled: true
+      interNamespaceAccessLabels: "accept"
+      allowedIngressPorts: [8000, 8443]
+  service:
+    type: ClusterIP
+
+route:
+  enabled: true
+  tls:
+    enabled: true
+
+hub:
+  networkPolicy:
+    enabled: true
+  fsGid:
+  containerSecurityContext:
+    runAsUser:
+    runAsGroup:
+  config:
+    Authenticator:
+      enable_auth_state: true
+      auto_login: true
+    OpenShiftOAuthenticator:
+      # APPLICATION_NAME-NAMESPACE-users
+      client_id: jupyterhub-jupyterhub-users
+      client_secret: oODCi8pvtXG7IuYFVeV1c1VX24mTWTpd
+      # https://APPLICATION_NAME-NAMESPACE.CLUSTER_SUBDOMAIN/hub/oauth_callback
+      oauth_callback_url: https://jupyterhub-jupyterhub.apps.lcc570vo.eastus.aroapp.io/hub/oauth_callback
+      scope:
+        - user:full
+    JupyterHub:
+      authenticator_class: openshift
+  image:
+    name: docker.io/expruc/openshift-hub
+    tag: "latest"
+  extraConfig:
+    mount_oauth_token.py: |
+      async def auth_state_hook(spawner, auth_state):
+        if not auth_state:
+            # auth_state not enabled
+            raise ValueError("Auth state is not enabled")
+        spawner.environment['OPENSHIFT_TOKEN'] = auth_state['access_token']
+
+      c.Spawner.auth_state_hook = auth_state_hook
+    set_oauth_scope.py: |
+      from oauthenticator.openshift import OpenShiftOAuthenticator
+      OpenShiftOAuthenticator.scope = ['user:full']
+
+singleuser:
+  # Set to legacy implementation of jupyter notebook, need to check extensions before upgrading to jupyterhub 2.0.0 and jupyterlab
+  # https://zero-to-jupyterhub.readthedocs.io/en/latest/jupyterhub/customizing/user-environment.html#selecting-a-user-interface
+  # This is the default with JupyterHub 1.x
+  cmd: /opt/app-root/builder/run
+  startTimeout: 120
+  cloudMetadata:
+    blockWithIptables: False
+  storage:
+    dynamic:
+      storageClass: managed-premium
+    capacity: 1Gi
+  uid:
+  fsGid:
+  extraEnv:
+#    defaultUrl: /tree/
+#    JUPYTERHUB_SINGLEUSER_APP: "jupyter_server.serverapp.ServerApp"
+    POD_IP:
+      name: POD_IP
+      valueFrom:
+        fieldRef:
+          fieldPath: status.podIP
+    NAMESPACE:
+      name: NAMESPACE
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.namespace
+  extraPodConfig: {"automount_service_account_token": true}
+  profileList:
+  # Images available at https://github.com/momoadc/jupyter-notebooks/pkgs/container/jupyter-notebooks%2Fpyspark-notebook
+    - display_name: "Spark 3.2.0 - Hadoop 3.2 - Python 3.6"
+      description: ""
+      kubespawner_override:
+        image: ghcr.io/momoadc/jupyter-notebooks/pyspark-notebook:v3.2.0-hadoop3.2-py36
+      default: true

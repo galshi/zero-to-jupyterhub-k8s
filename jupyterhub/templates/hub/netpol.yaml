@@ -11,7 +11,6 @@ spec:
       {{- include "jupyterhub.matchLabels" . | nindent 6 }}
   policyTypes:
     - Ingress
-    - Egress
 
   # IMPORTANT:
   # NetworkPolicy's ingress "from" and egress "to" rule specifications require
@@ -39,7 +38,7 @@ spec:
 
     # allowed pods (hub.jupyter.org/network-access-hub) --> hub
     - ports:
-        - port: http
+        - port: 8081
       from:
         # source 1 - labeled pods
         - podSelector:
@@ -54,38 +53,4 @@ spec:
               hub.jupyter.org/network-access-hub: "true"
         {{- end }}
 
-    {{- with .Values.hub.networkPolicy.ingress }}
-    # depends, but default is nothing --> hub
-    {{- . | toYaml | nindent 4 }}
-    {{- end }}
-
-  egress:
-    # hub --> proxy
-    - ports:
-        - port: 8001
-      to:
-        - podSelector:
-            matchLabels:
-              {{- $_ := merge (dict "componentLabel" "proxy") . }}
-              {{- include "jupyterhub.matchLabels" $_ | nindent 14 }}
-    # hub --> singleuser-server
-    - ports:
-        - port: 8888
-      to:
-        - podSelector:
-            matchLabels:
-              {{- $_ := merge (dict "componentLabel" "singleuser-server") . }}
-              {{- include "jupyterhub.matchLabels" $_ | nindent 14 }}
-
-    # hub --> Kubernetes internal DNS
-    - ports:
-        - protocol: UDP
-          port: 53
-        - protocol: TCP
-          port: 53
-
-    {{- with .Values.hub.networkPolicy.egress }}
-    # hub --> depends, but the default is everything
-    {{- . | toYaml | nindent 4 }}
-    {{- end }}
 {{- end }}
